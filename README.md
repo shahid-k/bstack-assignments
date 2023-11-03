@@ -1,1 +1,4 @@
-# bstack-assignments
+# Browserstack onboarding assignments
+
+- Greed Game
+- Tail -f
