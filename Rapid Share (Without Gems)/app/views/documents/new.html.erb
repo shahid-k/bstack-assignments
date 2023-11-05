@@ -1,0 +1,36 @@
+<script type="text/javascript">
+  validateform = function(){
+    var description = document.forms["myform"]["description"].value;
+    var doc = document.forms["myform"]["doc"].value;
+    if(!description){
+      alert("description missing");
+      return false;
+    }
+    if(!doc){
+      alert("document missing");
+      return false;
+    }
+    return true;
+  }
+</script>
+<%if @document.errors%>
+  <div id = "errors">
+    <%@document.errors.full_messages.each do |error|%>
+      <p>
+        <%=error%>
+      </p>
+    <%end%>
+  </div>
+<%end%>
+<%= form_for @document,:action => :upload, class: "form-group" ,:multipart => true, :id => "myform" do |f|%>
+  <p>
+    <%= f.label "document" %>
+    <%= f.file_field :doc, class:"form-control mb-2" %><br/>
+    <%= f.label "description" %>
+    <%= f.text_field :description, class:"form-control mx-sm-3 mb-2" %>
+  </p>
+  <p>
+    <%= f.submit "Upload", :onclick => "return validateform();", class: "btn btn-primary ml-3" %>
+  </p>
+  
+<% end %>

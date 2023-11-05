@@ -1,0 +1,67 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  $('.item-checkbox').change(function() {
+    var itemId = $(this).val();
+    var isChecked = $(this).is(':checked');
+    // // Enable/disable the corresponding button based on checkbox state
+    if(isChecked) {
+      $(`#delete_${itemId}`).attr('class','btn btn-danger ml-3 disabled');
+      $(`#download_${itemId}`).attr('class','btn btn-success ml-3');
+    }else{
+      $(`#delete_${itemId}`).attr('class','btn btn-danger ml-3');
+      $(`#download_${itemId}`).attr('class','btn btn-success ml-3 disabled');
+    }
+    let documentId = document.getElementById(`copy_${itemId}`).getAttribute('value').split('/')[2]
+    $.ajax({
+    type: 'PATCH',
+    url: '/documents/' + documentId + '/update_column',
+    data: { column_name: isChecked ? true : false }
+  });
+  });
+});
+function copyToClipboard(id) {
+  let checkbox = $(`#checkbox_${id}`);
+  if (checkbox.prop('checked')) {
+    let value = $(`#copy_${id}`).attr('value');
+    let url = window.location.host + "/" + value;
+    navigator.clipboard.writeText(url);
+  }
+}
+
+</script>
+
+<title>Documents</title>
+<head>
+    <%= javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js' %>
+</head>
+<div id="container">
+  <div id="docs" style="margin: 20px">
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <th scope="col">Documents</th>
+    <th scope="col">Upload Date</th>
+    <th scope="col">Description</th>
+    <th scope="col">Actions</th>
+  </tr>
+  </thead>
+<tbody>
+    <% @documents.each_with_index do |document, index| %>
+      <tr scope="row">
+    <td><%= document.name %></td>
+    <td><p class="upload_date"><%= (document.created_at).strftime('%B %d %Y') %></p></td>
+    <td><p class="description"><%= document.description %></p></td>
+    <td>
+      <%= link_to 'Delete', document_path(document), method: :delete, class: "btn btn-danger ml-3", id: "delete_#{index+1}" %>
+      <%= link_to 'Download', document_path(document), class: "btn btn-success ml-3 disabled", id: "download_#{index+1}"%> 
+      <%= link_to 'Copy',"#" ,id: "copy_#{index+1}", value: document_path(document) ,class: "bi bi-clipboard-minus", :onclick => "return copyToClipboard(#{index+1})"%>
+      Share: <%= check_box_tag("checkbox_#{index+1}", "#{index+1}" ,document.shared, class: "item-checkbox") %>
+    </td>
+  </tr>
+    <% end %>
+  </tbody>
+</table>
+  </div>
+</div>
+
+

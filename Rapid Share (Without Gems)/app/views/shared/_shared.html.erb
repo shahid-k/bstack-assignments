@@ -1,0 +1,64 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  $('.item-checkbox').change(function() {
+    var itemId = $(this).val();
+    var isChecked = $(this).is(':checked');
+    // // Enable/disable the corresponding button based on checkbox state
+    if(isChecked) {
+      $(`#delete_${itemId}`).attr('class','btn btn-danger ml-3 disabled');
+      $(`#download_${itemId}`).attr('class','btn btn-success ml-3');
+    }else{
+      $(`#delete_${itemId}`).attr('class','btn btn-danger ml-3');
+      $(`#download_${itemId}`).attr('class','btn btn-success ml-3 disabled');
+    }
+    let documentId = document.getElementById(`copy_${itemId}`).getAttribute('value').split('/')[2]
+    $.ajax({
+    type: 'PATCH',
+    url: '/documents/' + documentId + '/update_column',
+    data: { column_name: isChecked ? true : false }
+  });
+  });
+});
+
+  function copytoclipboard(id) {
+      let checkbox = document.getElementById(`checkbox_${id}`)
+      if(checkbox.checked){
+        let value = document.getElementById(`copy_${id}`).getAttribute('value');
+        let url =window.location.host+"/"+value
+        navigator.clipboard.writeText(`${url}`)
+      }
+  }
+</script>
+
+<title>Shared Documents</title>
+<head>
+    <%= javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js' %>
+</head>
+<div id="container">
+  <div id="docs" style="margin: 20px">
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <th scope="col">Documents</th>
+    <th scope="col">Description</th>
+    <th scope="col">Actions</th>
+  </tr>
+  </thead>
+<tbody>
+    <% @documents.each_with_index do |document, index| %>
+    <% if document.shared %>
+      <tr scope="row">
+    <td><%= document.name %></td>
+    <td><p class="description"><%= document.description %></p></td>
+    <td>
+      <%= link_to 'Download', document_path(document), class: "btn btn-success ml-3", id: "download_#{index+1}"%> 
+    </td>
+  </tr>
+  <% end%>
+    <% end %>
+  </tbody>
+</table>
+  </div>
+</div>
+
+
