@@ -1,4 +1,6 @@
-# Browserstack onboarding assignments
+# Browserstack Onboarding Assignments
 
 - Greed Game
-- Tail -f
+- Tail -f (Reading for end of the file)
+- Rapid Share (File sharing application without using Rails Framework)
+- Generate Key application
